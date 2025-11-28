@@ -1,57 +1,95 @@
 package model;
 
+import util.RideInterface;
+import java.util.LinkedList;
+import java.util.Queue;
+
 /**
- * Part1要求：封装游乐设施的核心属性，包含1个Employee类型变量
- * 后续Part2-Part7将基于此类扩展方法
+ * Part2要求：实现RideInterface接口，扩展Part1的Ride类
+ * 新增队列、历史、运行相关属性，重写接口8个方法（暂留空实现，后续Part3-Part5补全）
  */
-public class Ride {
-    // 3个核心属性（含1个Employee类型，满足Part1要求）
+public class Ride implements RideInterface {
+    // Part1原有属性（不变）
     private String rideId;          // 游乐设施ID（如"RC-001"）
     private String rideName;        // 游乐设施名称（如"超级过山车"）
     private Employee operator;      // 操作员（必须有操作员才能运行）
 
-    // 1. 默认构造器（满足Part1要求）
-    public Ride() {}
+    // -------------------------- Part2新增属性（为后续功能铺路） --------------------------
+    private Queue<Visitor> waitingQueue;    // Part3：排队队列（FIFO）
+    private LinkedList<Visitor> rideHistory; // Part4A：游玩历史（支持Iterator）
+    private int maxRider;           // Part5：单次运行最大载客量（至少1人）
+    private int numOfCycles;        // Part5：运行次数（默认0）
 
-    // 2. 带参构造器：初始化所有属性
-    public Ride(String rideId, String rideName, Employee operator) {
+    // -------------------------- Part2修改构造器（初始化新增属性） --------------------------
+    public Ride() {
+        // 空构造器：初始化集合（避免空指针）
+        this.waitingQueue = new LinkedList<>();
+        this.rideHistory = new LinkedList<>();
+        this.numOfCycles = 0;
+        this.maxRider = 1; // 默认最大载客1人
+    }
+
+    // 带参构造器（推荐使用，初始化所有核心属性）
+    public Ride(String rideId, String rideName, Employee operator, int maxRider) {
         this.rideId = rideId;
         this.rideName = rideName;
         this.operator = operator;
+        // 载客量校验：至少1人，非法值默认1
+        this.maxRider = (maxRider >= 1) ? maxRider : 1;
+
+        // 初始化集合（关键：避免后续调用方法时空指针）
+        this.waitingQueue = new LinkedList<>();
+        this.rideHistory = new LinkedList<>();
+        this.numOfCycles = 0;
     }
 
-    // 3. Getter与Setter（封装属性，满足Part1要求）
-    public String getRideId() {
-        return rideId;
-    }
+    // -------------------------- Part2新增Getter/Setter（非集合属性） --------------------------
+    public String getRideId() { return rideId; }
+    public void setRideId(String rideId) { this.rideId = rideId; }
+    public String getRideName() { return rideName; }
+    public void setRideName(String rideName) { this.rideName = rideName; }
+    public Employee getOperator() { return operator; }
+    public void setOperator(Employee operator) { this.operator = operator; }
+    public int getMaxRider() { return maxRider; }
+    public void setMaxRider(int maxRider) { this.maxRider = (maxRider >= 1) ? maxRider : 1; }
+    public int getNumOfCycles() { return numOfCycles; }
 
-    public void setRideId(String rideId) {
-        this.rideId = rideId;
-    }
+    // -------------------------- Part2：重写RideInterface接口的8个方法（空实现） --------------------------
+    @Override
+    public void addVisitorToQueue(Visitor visitor) {}
 
-    public String getRideName() {
-        return rideName;
-    }
+    @Override
+    public void removeVisitorFromQueue() {}
 
-    public void setRideName(String rideName) {
-        this.rideName = rideName;
-    }
+    @Override
+    public void printQueue() {}
 
-    public Employee getOperator() {
-        return operator;
-    }
+    @Override
+    public void addVisitorToHistory(Visitor visitor) {}
 
-    public void setOperator(Employee operator) {
-        this.operator = operator;
-    }
+    @Override
+    public boolean checkVisitorFromHistory(Visitor visitor) { return false; }
 
-    // 4. 重写toString：便于打印设施详情
+    @Override
+    public int numberOfVisitors() { return 0; }
+
+    @Override
+    public void printRideHistory() {}
+
+    @Override
+    public void runOneCycle() {}
+
+    // -------------------------- Part2修改toString（包含新增属性） --------------------------
     @Override
     public String toString() {
         return "Ride{" +
                 "rideId='" + rideId + '\'' +
                 ", rideName='" + rideName + '\'' +
                 ", operator=" + (operator != null ? operator.getFullName() : "未分配") +
+                ", maxRider=" + maxRider +
+                ", 已运行次数=" + numOfCycles +
+                ", 排队人数=" + waitingQueue.size() +
+                ", 历史游玩人数=" + rideHistory.size() +
                 '}';
     }
 }

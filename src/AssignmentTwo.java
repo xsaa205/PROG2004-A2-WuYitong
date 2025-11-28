@@ -1,39 +1,60 @@
+import model.Employee;
+import model.Ride;
+import model.Visitor;
+import java.time.LocalDate;
+
 /**
- * Part1要求：主类，包含main方法与Part3-Part7的方法占位符
+ * Part2测试：验证抽象类、接口、子类实现是否正常工作
  */
 public class AssignmentTwo {
 
     // 程序入口
     public static void main(String[] args) {
-        System.out.println("==================================== PROG2004 A2 主题公园管理系统 ====================================");
+        System.out.println("==================================== PROG2004 A2 主题公园管理系统（Part2测试） ====================================");
         AssignmentTwo demo = new AssignmentTwo();
+        demo.testPart2Functions(); // 测试Part2新增功能
 
-        // 后续Part3-Part7实现后，取消注释调用
-        // demo.partThree();
-        // demo.partFourA();
-        // demo.partFourB();
-        // demo.partFive();
-        // demo.partSix();
-        // demo.partSeven();
-
-        System.out.println("\n==================================== 功能待实现 ====================================");
+        System.out.println("\n==================================== Part2测试完成 ====================================");
     }
 
-    // Part3：排队队列演示方法（占位符）
+    // 测试Part2核心功能（抽象类、接口、子类实现）
+    public void testPart2Functions() {
+        // 1. 测试抽象类+子类多态（Person→Employee/Visitor）
+        System.out.println("\n🔹 测试抽象类与多态：");
+        Employee operator = new Employee(
+                "EMP-001",
+                "张三",
+                30,
+                "过山车操作员",
+                "RC-001"
+        );
+        Visitor vipVisitor = new Visitor(
+                "VIS-001",
+                "李四",
+                25,
+                "VIP访客",
+                LocalDate.of(2025, 11, 1)
+        );
+        // 调用抽象方法（多态体现：不同子类有不同实现）
+        System.out.println(operator.introduceYourself());
+        System.out.println(vipVisitor.introduceYourself());
+
+        // 2. 测试Ride类（实现接口+新增属性）
+        System.out.println("\n🔹 测试Ride类（实现接口+新增属性）：");
+        Ride rollerCoaster = new Ride(
+                "RC-001",
+                "超级过山车",
+                operator,
+                2 // 单次最大载客2人
+        );
+        System.out.println(rollerCoaster); // 打印toString，验证新增属性
+    }
+
+    // Part3-Part7方法占位符（不变）
     public void partThree() {}
-
-    // Part4A：游玩历史演示方法（占位符）
     public void partFourA() {}
-
-    // Part4B：历史排序演示方法（占位符）
     public void partFourB() {}
-
-    // Part5：运行Ride周期演示方法（占位符）
     public void partFive() {}
-
-    // Part6：导出历史到文件演示方法（占位符）
     public void partSix() {}
-
-    // Part7：从文件导入历史演示方法（占位符）
     public void partSeven() {}
 }
