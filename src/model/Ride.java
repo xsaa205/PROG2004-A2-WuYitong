@@ -1,36 +1,41 @@
 package model;
 
+// 只保留实际用到的import
 import util.RideInterface;
 import util.VisitorComparator;
-import java.util.Collections;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Queue;
 
-@SuppressWarnings("unused") // 抑制未使用方法的警告
+// （删除未使用的import，比如：import java.util.Collections;）
+
+@SuppressWarnings("unused")
 public class Ride implements RideInterface {
-    // Part2-Part4原有属性（长隆场景适配）
+    // 属性定义（修正拼写，确保与接口一致）
     private final String rideId;          // 长隆设施ID
     private final String rideName;        // 长隆设施名称
     private Employee operator;            // 长隆专项操作员
     private final Queue<Visitor> waitingQueue;    // 排队队列
-    private final LinkedList<Visitor> rideHistory; // 游玩历史
+    private final LinkedList<Visitor> rideHistory; // 游玩历史（修正拼写：rideHistory）
     private final int maxRider;           // 单次最大载客量
     private int numOfCycles;              // 今日运行次数
 
-    // 带参构造器（初始化所有属性）
+    // 构造器（确保属性初始化正确）
     public Ride(String rideId, String rideName, Employee operator, int maxRider) {
         this.rideId = rideId;
         this.rideName = rideName;
         this.operator = operator;
-        this.maxRider = (maxRider >= 1) ? maxRider : 4; // 大摆锤默认4人
+        this.maxRider = (maxRider >= 1) ? maxRider : 6;
 
         this.waitingQueue = new LinkedList<>();
-        this.rideHistory = new LinkedList<>();
+        this.rideHistory = new LinkedList<>(); // 修正拼写：rideHistory
         this.numOfCycles = 0;
     }
 
-    // Getter与Setter
+    // Getter与Setter（确保方法名正确）
     public String getRideId() { return rideId; }
     public String getRideName() { return rideName; }
     public Employee getOperator() { return operator; }
@@ -38,97 +43,116 @@ public class Ride implements RideInterface {
     public int getMaxRider() { return maxRider; }
     public int getNumOfCycles() { return numOfCycles; }
 
-    // -------------------------- Part5：运行Ride周期（核心方法） --------------------------
+    // -------------------------- Part6：导出历史（正确实现接口方法） --------------------------
     @Override
-    public void runOneCycle() {
-        // 前置校验1：是否分配长隆专项操作员
-        if (operator == null) {
-            System.out.println(" 【" + rideName + "】未分配长隆专项操作员，无法运行");
+    public void exportRideHistory(String filePath) {
+        if (filePath == null || filePath.trim().isEmpty()) {
+            System.out.println("❌ 文件路径不能为空");
             return;
         }
-
-        // 前置校验2：排队队列是否有访客
-        if (waitingQueue.isEmpty()) {
-            System.out.println(" 【" + rideName + "】排队队列为空，无法运行");
+        if (rideHistory.isEmpty()) { // 修正拼写：rideHistory
+            System.out.println("❌ 【" + rideName + "】游玩历史为空，无需导出");
             return;
         }
-
-        // 核心逻辑：长隆设施运行流程（安全检查→载客→更新历史）
-        System.out.println("\n 长隆欢乐世界 - 【" + rideName + "】开始运行第" + (numOfCycles + 1) + "周期（单次最大载客：" + maxRider + "人）");
-        System.out.println("🔧 操作员" + operator.getFullName() + "正在进行安全检查（安全带+设备稳定性）...");
-        int actualRiderCount = 0;  // 实际载客数（队列不足时小于maxRider）
-
-        // 从队列取访客，添加到游玩历史
-        while (actualRiderCount < maxRider && !waitingQueue.isEmpty()) {
-            Visitor rider = waitingQueue.poll();
-            addVisitorToHistory(rider);
-            System.out.println(" 已载客：" + rider.getFullName() + "（ID：" + rider.getId() + "）");
-            actualRiderCount++;
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            writer.write("visitor_id,full_name,age,visitor_type,visit_date");
+            writer.newLine();
+            for (Visitor visitor : rideHistory) { // 修正拼写：rideHistory
+                String line = String.join(",",
+                        visitor.getId(),
+                        visitor.getFullName(),
+                        String.valueOf(visitor.getAge()),
+                        visitor.getVisitorType(),
+                        visitor.getVisitDate().toString()
+                );
+                writer.write(line);
+                writer.newLine();
+            }
+            System.out.println("✅ 【" + rideName + "】游玩历史已导出到：" + filePath);
+        } catch (IOException e) {
+            System.out.println("❌ 导出失败：" + e.getMessage());
         }
-
-        // 更新运行次数+完成提示
-        numOfCycles++;
-        System.out.println(" 【" + rideName + "】第" + numOfCycles + "周期运行完成！本次载客：" + actualRiderCount + "人，祝您游玩愉快～");
     }
 
-    // -------------------------- Part4A：游玩历史方法（已实现） --------------------------
+    // -------------------------- Part5：运行周期（正确实现接口方法） --------------------------
+    @Override
+    public void runOneCycle() {
+        if (operator == null) {
+            System.out.println("❌ 【" + rideName + "】未分配操作员");
+            return;
+        }
+        if (waitingQueue.isEmpty()) {
+            System.out.println("❌ 【" + rideName + "】队列为空");
+            return;
+        }
+        System.out.println("\n🚀 【" + rideName + "】开始运行第" + (numOfCycles + 1) + "周期");
+        System.out.println("🔧 操作员" + operator.getFullName() + "正在安全检查...");
+        int actual = 0;
+        while (actual < maxRider && !waitingQueue.isEmpty()) {
+            Visitor rider = waitingQueue.poll();
+            addVisitorToHistory(rider);
+            actual++;
+        }
+        numOfCycles++;
+        System.out.println("✅ 【" + rideName + "】第" + numOfCycles + "周期完成，载客" + actual + "人");
+    }
+
+    // -------------------------- Part4A：游玩历史方法（正确实现接口） --------------------------
     @Override
     public void addVisitorToHistory(Visitor visitor) {
         if (visitor != null) {
-            rideHistory.add(visitor);
-            // （内部调用，无需重复打印提示）
+            rideHistory.add(visitor); // 修正拼写：rideHistory
         }
     }
 
     @Override
     public boolean checkVisitorFromHistory(Visitor visitor) {
         if (visitor == null) return false;
-        return rideHistory.contains(visitor);
+        return rideHistory.contains(visitor); // 修正拼写：rideHistory
     }
 
     @Override
     public int numberOfVisitors() {
-        return rideHistory.size();
+        return rideHistory.size(); // 修正拼写：rideHistory
     }
 
     @Override
     public void printRideHistory() {
-        System.out.println("\n 长隆欢乐世界 - 【" + rideName + "】游玩历史（共" + rideHistory.size() + "人）：");
-        if (rideHistory.isEmpty()) {
-            System.out.println("   → 今日暂无访客体验" + rideName);
+        System.out.println("\n📜 【" + rideName + "】游玩历史（共" + rideHistory.size() + "人）："); // 修正拼写
+        if (rideHistory.isEmpty()) { // 修正拼写
+            System.out.println("   → 暂无访客体验");
             return;
         }
-
-        Iterator<Visitor> iterator = rideHistory.iterator();
-        int index = 1;
-        while (iterator.hasNext()) {
-            Visitor visitor = iterator.next();
-            System.out.printf("   %d. 姓名：%s | ID：%s | 类型：%s | 入园日期：%s%n",
-                    index, visitor.getFullName(), visitor.getId(),
-                    visitor.getVisitorType(), visitor.getVisitDate());
-            index++;
+        Iterator<Visitor> it = rideHistory.iterator(); // 修正拼写
+        int idx = 1;
+        while (it.hasNext()) {
+            Visitor v = it.next();
+            System.out.printf("   %d. 姓名：%s | ID：%s | 类型：%s | 日期：%s%n",
+                    idx, v.getFullName(), v.getId(), v.getVisitorType(), v.getVisitDate());
+            idx++;
         }
-        if (rideName.contains("超级大摆锤")) {
-            System.out.println("    长隆提示：超级大摆锤摆幅达120度，建议1.4米以上访客体验～");
+        if (rideName.contains("摩天轮")) {
+            System.out.println("   💡 长隆提示：巨型摩天轮可俯瞰园区全景");
         }
     }
 
-    // -------------------------- Part4B：排序方法（已实现） --------------------------
+    // Part4B：排序方法（将Collections.sort替换为List.sort）
     public void sortRideHistory() {
         if (rideHistory.isEmpty()) {
-            System.out.println(" 【" + rideName + "】游玩历史为空，无需排序");
+            System.out.println("❌ 历史为空，无需排序");
             return;
         }
-        Collections.sort(rideHistory, new VisitorComparator());
-        System.out.println(" 【" + rideName + "】游玩历史已排序");
+        // 替换：Collections.sort(rideHistory, new VisitorComparator())
+        rideHistory.sort(new VisitorComparator());
+        System.out.println("✅ 【" + rideName + "】历史已排序");
     }
 
-    // -------------------------- Part3：排队方法（已实现） --------------------------
+    // -------------------------- Part3：排队方法（正确实现接口） --------------------------
     @Override
     public void addVisitorToQueue(Visitor visitor) {
         if (visitor != null) {
             waitingQueue.offer(visitor);
-            System.out.println(" 长隆访客[" + visitor.getFullName() + "（ID：" + visitor.getId() + "）]已加入【" + rideName + "】队列");
+            System.out.println("✅ 访客[" + visitor.getFullName() + "]已加入【" + rideName + "】队列");
         }
     }
 
@@ -136,39 +160,34 @@ public class Ride implements RideInterface {
     public void removeVisitorFromQueue() {
         Visitor removed = waitingQueue.poll();
         if (removed != null) {
-            System.out.println(" 长隆访客[" + removed.getFullName() + "]已从【" + rideName + "】队列移除");
+            System.out.println("✅ 访客[" + removed.getFullName() + "]已离队");
         }
     }
 
     @Override
     public void printQueue() {
-        System.out.println("\n 长隆欢乐世界 - 【" + rideName + "】排队队列（当前等待：" + waitingQueue.size() + "人 | 单次载客：" + maxRider + "人）：");
+        System.out.println("\n📋 【" + rideName + "】队列（等待：" + waitingQueue.size() + "人）：");
         if (waitingQueue.isEmpty()) {
-            System.out.println("   → 当前无排队，立即体验～");
+            System.out.println("   → 当前无排队");
             return;
         }
-
-        Iterator<Visitor> iterator = waitingQueue.iterator();
-        int index = 1;
-        while (iterator.hasNext()) {
-            Visitor visitor = iterator.next();
-            System.out.printf("   %d. 姓名：%s | 类型：%s%n",
-                    index, visitor.getFullName(), visitor.getVisitorType());
-            index++;
+        Iterator<Visitor> it = waitingQueue.iterator();
+        int idx = 1;
+        while (it.hasNext()) {
+            Visitor v = it.next();
+            System.out.printf("   %d. 姓名：%s | 类型：%s%n", idx, v.getFullName(), v.getVisitorType());
+            idx++;
         }
     }
 
-    // 重写toString
+    // toString方法
     @Override
     public String toString() {
-        return "长隆游乐设施{" +
-                "设施ID='" + rideId + '\'' +
+        return "长隆设施{" +
+                "ID='" + rideId + '\'' +
                 ", 名称='" + rideName + '\'' +
                 ", 操作员=" + (operator != null ? operator.getFullName() : "未分配") +
-                ", 单次载客=" + maxRider +
-                ", 今日运行次数=" + numOfCycles +
-                ", 排队人数=" + waitingQueue.size() +
-                ", 游玩人数=" + rideHistory.size() +
+                ", 载客量=" + maxRider +
                 '}';
     }
 }
