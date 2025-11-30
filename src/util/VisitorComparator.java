@@ -4,36 +4,37 @@ import model.Visitor;
 import java.util.Comparator;
 
 /**
- * Part4B要求：实现Comparator<Visitor>，按至少2个实例变量排序
- * 长隆场景适配：排序规则贴合长隆运营优先级（快速通道>VIP>家庭>普通，早入园优先）
+ * Implements Comparator<Visitor> to sort by at least 2 instance variables
+ * Chimelong scenario adaptation: Sorting rules aligned with Chimelong operational priorities
+ * (Fast Pass > VIP > Family > General, earlier visit dates take precedence)
  */
 public class VisitorComparator implements Comparator<Visitor> {
 
     @Override
     public int compare(Visitor v1, Visitor v2) {
-        // 1. 第一排序维度：入园日期升序（早入园的访客排在前，符合长隆"先到先体验"原则）
+        // 1. Primary sorting dimension: Ascending order by visit date (earlier visitors first, aligns with Chimelong's "first-come-first-serve" principle)
         int dateCompare = v1.getVisitDate().compareTo(v2.getVisitDate());
         if (dateCompare != 0) {
-            return dateCompare; // 日期不同时，直接按日期排序
+            return dateCompare; // Directly sort by date when dates differ
         }
 
-        // 2. 第二排序维度：访客类型降序（同日期下，长隆运营优先级：快速通道 > VIP > 家庭 > 普通）
-        // 自定义类型权重：通过字符串对比实现优先级（权重高的类型字符串靠后，用v2.compareTo(v1)实现降序）
+        // 2. Secondary sorting dimension: Descending order by visitor type (same date: Fast Pass > VIP > Family > General)
+        // Custom type weighting: String comparison for priority (higher weight strings rank first using v2.compareTo(v1) for descending)
         return getVisitorTypeWeight(v2.getVisitorType()) - getVisitorTypeWeight(v1.getVisitorType());
     }
 
     /**
-     * 长隆访客类型权重：为不同类型分配数值，便于排序（权重越高，优先级越高）
-     * @param visitorType 访客类型（如"快速通道访客"）
-     * @return 对应权重（10=快速通道，8=VIP，5=家庭，3=普通）
+     * Chimelong visitor type weights: Numerical values assigned to different types for sorting
+     * @param visitorType Visitor type (e.g., "Fast Pass Visitor")
+     * @return Corresponding weight (10=Fast Pass, 8=VIP, 5=Family, 3=General)
      */
     private int getVisitorTypeWeight(String visitorType) {
         return switch (visitorType) {
-            case "快速通道访客" -> 10; // 长隆快速通道最高优先级
-            case "VIP访客" -> 8;       // VIP次之
-            case "家庭访客" -> 5;       // 家庭访客（带儿童）优先于普通
-            case "普通访客" -> 3;       // 普通访客基础优先级
-            default -> 1;              // 未知类型最低优先级
+            case "Fast Pass Visitor" -> 10; // Chimelong Fast Pass highest priority
+            case "VIP Visitor" -> 8;        // VIP next
+            case "Family Visitor" -> 5;     // Family (with children) before General
+            case "General Visitor" -> 3;    // General base priority
+            default -> 1;                   // Unknown types lowest priority
         };
     }
 }

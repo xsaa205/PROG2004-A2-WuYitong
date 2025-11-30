@@ -3,15 +3,11 @@ package model;
 import java.time.LocalDate;
 import java.util.Objects;
 
-/**
- * Part2要求：实现Person类的抽象方法introduceYourself()
- */
+@SuppressWarnings("unused") // Suppress unused method/constructor warnings
 public class Visitor extends Person {
-    // Part1原有属性（不变）
-    private String visitorType;    // 访客类型（如"普通访客"/"VIP访客"）
-    private LocalDate visitDate;   // 来访日期（用于Part4B排序）
+    private String visitorType;    // Visitor type (e.g., "General Visitor"/"VIP Visitor")
+    private LocalDate visitDate;   // Visit date
 
-    // Part1原有构造器（不变）
     public Visitor() {}
 
     public Visitor(String id, String fullName, int age, String visitorType, LocalDate visitDate) {
@@ -20,19 +16,18 @@ public class Visitor extends Person {
         this.visitDate = visitDate;
     }
 
-    // Part1原有Getter/Setter（不变）
+    // Getter/Setter
     public String getVisitorType() { return visitorType; }
     public void setVisitorType(String visitorType) { this.visitorType = visitorType; }
     public LocalDate getVisitDate() { return visitDate; }
     public void setVisitDate(LocalDate visitDate) { this.visitDate = visitDate; }
 
-    // -------------------------- Part2新增：实现抽象方法 --------------------------
+    // Implement abstract method
     @Override
     public String introduceYourself() {
-        return "【访客】" + getFullName() + "（ID：" + getId() + "），类型：" + visitorType + "，来访日期：" + visitDate;
+        return "[Visitor] " + getFullName() + " (ID: " + getId() + "), Type: " + visitorType + ", Visit Date: " + visitDate;
     }
 
-    // Part1原有toString/equals/hashCode（不变）
     @Override
     public String toString() {
         return "Visitor{" +

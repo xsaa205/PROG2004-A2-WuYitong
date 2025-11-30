@@ -2,17 +2,12 @@ package model;
 
 import java.util.Objects;
 
-/**
- * Part2要求：改造为抽象类，封装所有人员的公共属性与行为，不可实例化
- * 新增抽象方法introduceYourself()，强制子类实现
- */
+@SuppressWarnings("unused") // Suppress unused setter warnings
 public abstract class Person {
-    // Part1原有属性（不变）
-    private String id;         // 唯一标识（员工ID/访客ID）
-    private String fullName;   // 姓名
-    private int age;           // 年龄
+    private String id;         // Unique identifier (Employee ID/Visitor ID)
+    private String fullName;   // Full name
+    private int age;           // Age
 
-    // Part1原有构造器（不变）
     public Person() {}
 
     public Person(String id, String fullName, int age) {
@@ -21,11 +16,11 @@ public abstract class Person {
         if (age >= 0 && age <= 150) {
             this.age = age;
         } else {
-            throw new IllegalArgumentException("年龄必须在0-150之间，当前输入：" + age);
+            throw new IllegalArgumentException("Age must be between 0 and 150. Current input: " + age);
         }
     }
 
-    // Part1原有Getter/Setter（不变）
+    // Getters/Setters
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
     public String getFullName() { return fullName; }
@@ -35,14 +30,14 @@ public abstract class Person {
         if (age >= 0 && age <= 150) {
             this.age = age;
         } else {
-            throw new IllegalArgumentException("年龄必须在0-150之间，当前输入：" + age);
+            throw new IllegalArgumentException("Age must be between 0 and 150. Current input: " + age);
         }
     }
 
-    // -------------------------- Part2新增：抽象方法（强制子类实现） --------------------------
+    // Abstract method (forces subclasses to implement)
     public abstract String introduceYourself();
 
-    // Part1原有toString/equals/hashCode（不变）
+    // Override utility methods
     @Override
     public String toString() {
         return "Person{" +

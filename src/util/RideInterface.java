@@ -2,22 +2,26 @@ package util;
 
 import model.Visitor;
 
-// 确保接口的方法签名与Ride类的实现完全一致
 public interface RideInterface {
-    // Part3：排队相关
+    // Part3: Queue Management
     void addVisitorToQueue(Visitor visitor);
     void removeVisitorFromQueue();
     void printQueue();
 
-    // Part4A：游玩历史相关
+    // Part4A: Ride History Management
     void addVisitorToHistory(Visitor visitor);
+
+    // Precisely suppress unused return value warnings for individual methods
+    @SuppressWarnings("unused")
     boolean checkVisitorFromHistory(Visitor visitor);
+
+    @SuppressWarnings("unused")
     int numberOfVisitors();
     void printRideHistory();
 
-    // Part5：运行周期
+    // Part5: Operation Cycle
     void runOneCycle();
 
-    // Part6：导出历史
+    // Part6: History Export
     void exportRideHistory(String filePath);
 }
