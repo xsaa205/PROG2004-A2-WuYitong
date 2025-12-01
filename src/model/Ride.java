@@ -24,12 +24,26 @@ public class Ride implements RideInterface {
     private final int maxRider;           // Max riders per cycle
     private int numOfCycles;              // Operation cycles today
 
-    // Constructor
+    // Newly added: Default constructor
+    public Ride() {
+        // Final fields must be initialized; set default values to ensure object validity
+        this.rideId = "DEFAULT-RIDE-000";    // Default ride ID
+        this.rideName = "Default Ride";      // Default ride name
+        this.operator = null;                // Default: no operator (can be set via setter later)
+        this.maxRider = 6;                   // Default: 6 riders per cycle (consistent with the parameterized constructor)
+
+        // Collection field initialization (consistent with the logic in the parameterized constructor)
+        this.waitingQueue = new LinkedList<>();
+        this.rideHistory = new LinkedList<>();
+        this.numOfCycles = 0;                // Default: 0 operating cycles
+    }
+
+    // Original: Parameterized constructor
     public Ride(String rideId, String rideName, Employee operator, int maxRider) {
         this.rideId = rideId;
         this.rideName = rideName;
         this.operator = operator;
-        this.maxRider = (maxRider >= 1) ? maxRider : 6; // Default 6 riders
+        this.maxRider = (maxRider >= 1) ? maxRider : 6; // Default to 6 riders if input is invalid
 
         this.waitingQueue = new LinkedList<>();
         this.rideHistory = new LinkedList<>();
